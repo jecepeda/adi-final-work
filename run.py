@@ -1,2 +1,6 @@
 from app import app
-#app.run()
+
+app.config.from_json('../config.json')
+
+if __name__ == '__main__':
+    app.run()
