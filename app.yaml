@@ -5,3 +5,7 @@ threadsafe: true
 handlers:
 - url: /.*
   script: run.app
+
+libraries:
+- name: jinja2
+  version: "2.6"

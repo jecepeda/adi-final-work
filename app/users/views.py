@@ -25,7 +25,6 @@ def update_user(user_id):
         abort(404)
     elif user != g.user:
         abort(401)
-
     nick = request.json.get('nick')
     name = request.json.get('name')
     last_name = request.json.get('lastName')
@@ -112,6 +111,6 @@ def post_user():
                     nick=nick)
 
     new_user.hash_password(password)
-    new_user.put()
+    user_id = new_user.put()
 
-    return make_response(jsonify(new_user.toJSON), 200)
+    return make_response(jsonify({'created':user_id.id()}), 200)

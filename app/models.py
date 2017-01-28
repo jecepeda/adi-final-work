@@ -41,6 +41,7 @@ class Author(ndb.Model):
 
     def __repr__(self):
         return "Author: name: {}".format(self.name)
+
     def __str__(self):
         return self.__repr__()
 
@@ -76,3 +77,20 @@ class Organism(ndb.Model):
         for organism in Organism.query():
             organisms.append(organism.toJSON)
         return organisms
+
+class Paper(ndb.Model):
+    title = ndb.StringProperty()
+    updated = ndb.DateTimeProperty(auto_now=True)
+
+    @property
+    def toJSON(self):
+        return {"id": self.key.urlsafe(),
+                "title": self.title,
+                "updated": str(self.updated)}
+
+    @classmethod
+    def getAll(self):
+        papers = []
+        for paper in Paper.query():
+            papers.append(paper.toJSON)
+        return papers
