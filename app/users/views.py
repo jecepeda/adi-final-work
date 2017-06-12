@@ -21,7 +21,9 @@ def search_user(user_id):
 def update_user(user_id):
     user = search_user(user_id)
 
-    if user is None:
+    if not request.json:
+        abort(400)
+    elif user is None:
         abort(404)
     elif user != g.user:
         abort(401)
@@ -60,7 +62,7 @@ def delete_user(user_id):
         abort(401)
 
     key.delete()
-    return make_response(jsonify({'deleted': user_id}), 200)
+    return make_response(jsonify({'removed': user_id}), 200)
 
 
 @users.route('/user/<user_id>', methods=['POST', 'GET', 'PUT', 'DELETE'])
