@@ -33,8 +33,9 @@ def update_user(user_id):
         abort(400)
 
     user.name = name
-    user.last_name = name
-    user.nick = nick
+    user.last_name = last_name
+    if nick is not None:
+        user.nick = nick
 
     user.put()
 

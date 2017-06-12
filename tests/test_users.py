@@ -71,23 +71,14 @@ class UserEndpointTest(BaseTestClass):
         self.assertEqual(content, expected_content)
 
 
-class UserEndpointSpecificUser(BaseTestClass):
+class UserAuthenticationTest(BaseTestClass):
 
     def setUp(self):
-        super(UserEndpointSpecificUser, self).setUp()
+        super(UserAuthenticationTest, self).setUp()
         self.user_info = {'id':'foo@bar.com', 'nick':'foo', 'name':'Foo', 'lastName':'bar', 'password':'foobar'}
         self.app.post('/user', data=json.dumps(self.user_info), content_type='application/json')
 
-    def testGetCorrectlyTheUser(self):
-        quoted_url = quote_plus(self.user_info['id'])
-        response = self.app.get('/user/{}'.format(quoted_url))
-        self.assertEqual(response.status_code, 200)
-        expected_content = {'id':'foo@bar.com', 'nick':'foo','name':'Foo','lastName':'bar'}
-        content = json.loads(response.data)
-        self.assertEqual(content, expected_content)
-        self.assertEqual(content, expected_content)
-
-    def testUserAuthenticatedWhenMakingChanges(self):
+    def testUserAuthenticatedWhenPUTRequest(self):
         quoted_url = quote_plus(self.user_info['id'])
         auth_headers = build_auth_headers(self.user_info['id'], self.user_info['password'])
         response = self.app.put('/user/{}'.format(quoted_url),
@@ -96,4 +87,73 @@ class UserEndpointSpecificUser(BaseTestClass):
                                 content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
+    def testUserAuthenticatedButAccessingOtherUser(self):
+        # create new user to authenticate with it
+        new_user = {'id':'bar@foo.com', 'nick':'foo', 'name':'bar', 'lastName':'Foobar', 'password':'foobar'}
+        self.app.post('/user', data=json.dumps(new_user), content_type='application/json')
+        # build url and headers
+        auth_headers = build_auth_headers(new_user['id'], new_user['password'])
+        quoted_url = quote_plus(self.user_info['id'])
+        response = self.app.put('/user/{}'.format(quoted_url),
+                                headers=auth_headers,
+                                data=json.dumps(self.user_info),
+                                content_type='application/json')
+        self.assertEqual(response.status_code, 401)
 
+
+class UserEndpointGETTest(BaseTestClass):
+
+    def setUp(self):
+        super(UserEndpointGETTest, self).setUp()
+        self.user_info = {'id':'foo@bar.com', 'nick':'foo', 'name':'Foo', 'lastName':'bar', 'password':'foobar'}
+        self.app.post('/user', data=json.dumps(self.user_info), content_type='application/json')
+
+    def testGETRequest(self):
+        quoted_url = quote_plus(self.user_info['id'])
+        response = self.app.get('/user/{}'.format(quoted_url))
+        self.assertEqual(response.status_code, 200)
+        expected_content = {'id':'foo@bar.com', 'nick':'foo','name':'Foo','lastName':'bar'}
+        content = json.loads(response.data)
+        self.assertEqual(content, expected_content)
+
+
+class UserEndpointPUTAndPOSTTest(BaseTestClass):
+
+    def setUp(self):
+        super(UserEndpointPUTAndPOSTTest, self).setUp()
+        self.user_info = {'id':'foo@bar.com', 'nick':'foo', 'name':'Foo', 'lastName':'bar', 'password':'foobar'}
+        self.app.post('/user', data=json.dumps(self.user_info), content_type='application/json')
+
+    def testPUTRequestSuccessfullChangingAllPossibleParameters(self):
+        quoted_url = quote_plus(self.user_info['id'])
+        auth_headers = build_auth_headers(self.user_info['id'], self.user_info['password'])
+        custom_changes = {'nick':'FOO', 'name':'FOOBAR', 'lastName':'BARFOO'}
+        response = self.app.put('/user/{}'.format(quoted_url),
+                                headers=auth_headers,
+                                data=json.dumps(custom_changes),
+                                content_type='application/json')
+        expected_result = custom_changes
+        expected_result['id'] = 'foo@bar.com'
+        result = json.loads(response.data)
+        self.assertEqual(result, expected_result)
+
+    def testPUTRequestFailingNotEnoughData(self):
+        quoted_url = quote_plus(self.user_info['id'])
+        auth_headers = build_auth_headers(self.user_info['id'], self.user_info['password'])
+        custom_changes = {'nick':'FOO', 'lastName':'BARFOO'}
+        response = self.app.put('/user/{}'.format(quoted_url),
+                                headers=auth_headers,
+                                data=json.dumps(custom_changes),
+                                content_type='application/json')
+
+        self.assertEqual(response.status_code, 400)
+
+    def testPUTRequestUserDoesNotExist(self):
+        quoted_url = quote_plus('doesnotexist@foo.com')
+        auth_headers = build_auth_headers(self.user_info['id'], self.user_info['password'])
+        custom_changes = {}
+        response = self.app.put('/user/{}'.format(quoted_url),
+                                headers=auth_headers,
+                                data=json.dumps(custom_changes),
+                                content_type='application/json')
+        self.assertEqual(response.status_code, 404)

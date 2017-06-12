@@ -12,4 +12,4 @@ test:
 clean:
 	$(RM) -rf *~ *.pyc lib
 	$(RM) -rf $(shell find . -name *~)
-	$(RM) -rf $(shell find . -name *pyc)
+	find . -name "*.pyc" -exec $(RM) -f {} \;
