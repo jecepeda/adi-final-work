@@ -35,7 +35,7 @@ class User(ndb.Model):
         return users
 
 class Author(ndb.Model):
-    organism = ndb.StringProperty()
+    organism = ndb.KeyProperty(kind='Organism')
     name = ndb.StringProperty()
     last_name = ndb.StringProperty()
 
@@ -60,7 +60,7 @@ class Author(ndb.Model):
         return authors
 
 class Organism(ndb.Model):
-    name = ndb.StringProperty()
+    name = ndb.StringProperty(repeated=False)
     address = ndb.StringProperty()
     country = ndb.StringProperty()
 
@@ -79,6 +79,7 @@ class Organism(ndb.Model):
         return organisms
 
 class Paper(ndb.Model):
+    author = ndb.KeyProperty(kind='Author', repeated=True)
     title = ndb.StringProperty()
     updated = ndb.DateTimeProperty(auto_now=True)
 

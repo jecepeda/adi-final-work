@@ -16,7 +16,7 @@ def main(sdk_path, test_path):
     site.addsitedir(os.path.join(os.getcwd(), 'lib'))
     import dev_appserver
     dev_appserver.fix_sys_path()
-    suite = unittest.loader.TestLoader().discover('./tests/')
+    suite = unittest.loader.TestLoader().discover(test_path)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
 
