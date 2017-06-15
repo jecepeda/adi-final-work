@@ -6,8 +6,10 @@ from urllib import unquote_plus
 from google.appengine.ext import ndb
 import re
 
+
 def check_all_elements(elements):
     return all(elem is not None for elem in elements)
+
 
 def post_paper():
     if not request.json:
@@ -27,6 +29,7 @@ def post_paper():
     paper_id = new_paper.put()
     return make_response(jsonify({'created': paper_id.urlsafe()}), 200)
 
+
 def get_paper(paper_id):
     paper_key = ndb.Key('Paper', paper_id)
     if paper_key.get() is None:
@@ -34,7 +37,8 @@ def get_paper(paper_id):
     paper = paper_key.get()
     return make_response(jsonify(paper.toJSON), 200)
 
-def delete_paper(paper_id)
+
+def delete_paper(paper_id):
     paper = None
     try:
         paper = ndb.Key(urlsafe=paper_id)
@@ -45,6 +49,7 @@ def delete_paper(paper_id)
     paper.delete()
     return make_response(jsonify({'deleted': paper.id()}), 200)
 
+
 @papers.route('/papers/<paper_id>', methods=['DELETE', 'GET'])
 def handle_papers(paper_id):
     if request.method == 'DELETE':
@@ -52,7 +57,8 @@ def handle_papers(paper_id):
     if request.method == 'GET':
         return get_paper(paper_id)
 
-@papers.route('/papers/', methods=['POST','GET'])
+
+@papers.route('/papers/', methods=['POST', 'GET'])
 def get_or_post_papers():
     if request.method == 'POST':
         return post_paper()

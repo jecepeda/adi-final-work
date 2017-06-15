@@ -6,15 +6,18 @@ from google.appengine.ext import ndb
 from ..auth import auth
 import re
 
+
 def check_all_elements(elements):
     return all(elem is not None for elem in elements)
 
-@organisms.route('/organisms', methods=['POST','GET'])
+
+@organisms.route('/organisms', methods=['POST', 'GET'])
 def handle_base_organism_endpoint():
     if request.method == 'GET':
         return get_organisms()
     else:
         return put_organism()
+
 
 @auth.login_required
 def put_organism():
@@ -33,10 +36,12 @@ def put_organism():
 
     organism_id = new_organism.put()
 
-    return make_response(jsonify({'created':organism_id.urlsafe()}),200)
+    return make_response(jsonify({'created': organism_id.urlsafe()}), 200)
+
 
 def get_organisms():
     return make_response(jsonify(Organism.getAll()), 200)
+
 
 def get_organism(id_organism):
     organism = None
@@ -47,6 +52,7 @@ def get_organism(id_organism):
     if organism is None:
         abort(404)
     return make_response(jsonify(organism.toJSON), 200)
+
 
 @auth.login_required
 def delete_organism(id_organism):
@@ -59,6 +65,7 @@ def delete_organism(id_organism):
         abort(404)
     organism.delete()
     return make_response(jsonify({'removed': organism.urlsafe()}), 200)
+
 
 @organisms.route('/organisms/<id_organism>', methods=['GET', 'DELETE'])
 def handle_organism(id_organism):

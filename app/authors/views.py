@@ -6,16 +6,20 @@ from google.appengine.ext import ndb
 from ..auth import auth
 import re
 
+
 def verify_email(email):
     m = re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email)
     return True if m else False
 
+
 def check_all_elements(elements):
     return all(elem is not None for elem in elements)
+
 
 def search_author(author_id):
     key = ndb.Key('Author', author_id)
     return key.get()
+
 
 def get_author(author_id):
     author = search_author(author_id)
@@ -25,6 +29,7 @@ def get_author(author_id):
 
     return make_response(jsonify(author.toJSON), 200)
 
+
 @auth.login_required
 def delete_author(author_id):
     key = ndb.Key('Author', author_id)
@@ -33,7 +38,8 @@ def delete_author(author_id):
         abort(404)
 
     key.delete()
-    return make_response(jsonify({'removed':author_id}), 200)
+    return make_response(jsonify({'removed': author_id}), 200)
+
 
 @authors.route('/author/<author_id>', methods=['GET', 'DELETE'])
 def handle_author(author_id):
@@ -42,6 +48,7 @@ def handle_author(author_id):
         return get_author(author_id)
     elif request.method == 'DELETE':
         return delete_author(author_id)
+
 
 @authors.route('/author', methods=['POST'])
 @auth.login_required
@@ -85,4 +92,4 @@ def create_author():
 
     author_id = new_author.put()
 
-    return make_response(jsonify({'created':author_id.id()}), 200)
+    return make_response(jsonify({'created': author_id.id()}), 200)

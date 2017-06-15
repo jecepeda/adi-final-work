@@ -5,6 +5,7 @@ from flask import g
 
 auth = HTTPBasicAuth()
 
+
 @auth.verify_password
 def verify_password(username, password):
     try:
