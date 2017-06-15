@@ -35,7 +35,7 @@ class User(ndb.Model):
         return users
 
 class Author(ndb.Model):
-    organism = ndb.KeyProperty(kind='Organism')
+    organism = ndb.KeyProperty(kind='Organism', required=True)
     name = ndb.StringProperty()
     last_name = ndb.StringProperty()
 
@@ -48,7 +48,7 @@ class Author(ndb.Model):
     @property
     def toJSON(self):
         return {"id": self.key.id(),
-                "organism": self.organism,
+                "organism": self.organism.get().toJSON,
                 "name" : self.name,
                 "lastName" : self.last_name}
 

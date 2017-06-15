@@ -50,8 +50,10 @@ def create_author():
         abort(400)
 
     author_id = request.json.get('id')
-    author = search_author(author_id)
+    if not verify_email(author_id):
+        abort(400)
 
+    author = search_author(author_id)
     if author is not None:
         abort(400)
 
@@ -77,7 +79,7 @@ def create_author():
         abort(400)
 
     new_author = Author(id=author_id,
-                        organism=organism,
+                        organism=organism_key,
                         name=name,
                         last_name=last_name)
 
