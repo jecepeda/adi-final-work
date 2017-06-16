@@ -12,6 +12,7 @@ app.register_blueprint(authors_blueprint)
 app.register_blueprint(organisms_blueprint)
 app.register_blueprint(papers_blueprint)
 
+
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not Found'}), 404)
