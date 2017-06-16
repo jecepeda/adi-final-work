@@ -25,13 +25,16 @@ def post_paper():
         abort(400)
 
     new_paper = Paper(title=title,
-                      parent=author)
+                      author=author)
     paper_id = new_paper.put()
     return make_response(jsonify({'created': paper_id.urlsafe()}), 200)
 
 
 def get_paper(paper_id):
-    paper_key = ndb.Key('Paper', paper_id)
+    try:
+        paper_key = ndb.Key(urlsafe=paper_id)
+    except:
+        abort(404)
     if paper_key.get() is None:
         abort(404)
     paper = paper_key.get()
@@ -47,7 +50,7 @@ def delete_paper(paper_id):
     if paper.get() is None:
         abort(404)
     paper.delete()
-    return make_response(jsonify({'deleted': paper.id()}), 200)
+    return make_response(jsonify({'removed': paper.urlsafe()}), 200)
 
 
 @papers.route('/papers/<paper_id>', methods=['DELETE', 'GET'])
@@ -58,7 +61,7 @@ def handle_papers(paper_id):
         return get_paper(paper_id)
 
 
-@papers.route('/papers/', methods=['POST', 'GET'])
+@papers.route('/papers', methods=['POST', 'GET'])
 def get_or_post_papers():
     if request.method == 'POST':
         return post_paper()

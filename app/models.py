@@ -2,6 +2,7 @@ from google.appengine.ext import ndb
 from passlib.apps import custom_app_context as pwd_context
 import re
 
+
 class User(ndb.Model):
     nick = ndb.StringProperty()
     name = ndb.StringProperty()
@@ -22,7 +23,7 @@ class User(ndb.Model):
 
     @property
     def toJSON(self):
-        return {"id": self.key.id() ,
+        return {"id": self.key.id(),
                 "nick": self.nick,
                 "name": self.name,
                 "lastName": self.last_name}
@@ -34,10 +35,11 @@ class User(ndb.Model):
             users.append(user.toJSON)
         return users
 
+
 class Author(ndb.Model):
     organism = ndb.KeyProperty(kind='Organism', required=True)
-    name = ndb.StringProperty()
-    last_name = ndb.StringProperty()
+    name = ndb.StringProperty(required=True)
+    last_name = ndb.StringProperty(required=True)
 
     def __repr__(self):
         return "Author: name: {}".format(self.name)
@@ -49,8 +51,8 @@ class Author(ndb.Model):
     def toJSON(self):
         return {"id": self.key.id(),
                 "organism": self.organism.get().toJSON,
-                "name" : self.name,
-                "lastName" : self.last_name}
+                "name": self.name,
+                "lastName": self.last_name}
 
     @classmethod
     def getAll(self):
@@ -59,10 +61,11 @@ class Author(ndb.Model):
             authors.append(author.toJSON)
         return authors
 
+
 class Organism(ndb.Model):
     name = ndb.StringProperty(repeated=False)
-    address = ndb.StringProperty()
-    country = ndb.StringProperty()
+    address = ndb.StringProperty(required=True)
+    country = ndb.StringProperty(required=True)
 
     @property
     def toJSON(self):
@@ -78,15 +81,17 @@ class Organism(ndb.Model):
             organisms.append(organism.toJSON)
         return organisms
 
+
 class Paper(ndb.Model):
-    author = ndb.KeyProperty(kind='Author', repeated=True)
-    title = ndb.StringProperty()
+    author = ndb.KeyProperty(kind='Author', required=True)
+    title = ndb.StringProperty(required=True)
     updated = ndb.DateTimeProperty(auto_now=True)
 
     @property
     def toJSON(self):
         return {"id": self.key.urlsafe(),
                 "title": self.title,
+                "author": self.author.id(),
                 "updated": str(self.updated)}
 
     @classmethod

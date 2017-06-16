@@ -2,6 +2,7 @@ from flask import Flask, make_response, jsonify
 from users.views import users as users_blueprint
 from authors.views import authors as authors_blueprint
 from organisms.views import organisms as organisms_blueprint
+from papers.views import papers as papers_blueprint
 from .auth import auth
 
 app = Flask(__name__)
@@ -9,7 +10,7 @@ app = Flask(__name__)
 app.register_blueprint(users_blueprint)
 app.register_blueprint(authors_blueprint)
 app.register_blueprint(organisms_blueprint)
-
+app.register_blueprint(papers_blueprint)
 
 @app.errorhandler(404)
 def not_found(error):
