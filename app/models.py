@@ -4,10 +4,10 @@ import re
 
 
 class User(ndb.Model):
-    nick = ndb.StringProperty()
-    name = ndb.StringProperty()
+    nick = ndb.StringProperty(required=True)
+    name = ndb.StringProperty(required=True)
     hashed_password = ndb.StringProperty()
-    last_name = ndb.StringProperty()
+    last_name = ndb.StringProperty(required=True)
 
     def hash_password(self, password):
         self.hashed_password = pwd_context.encrypt(password)

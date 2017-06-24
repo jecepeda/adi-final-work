@@ -10,7 +10,7 @@ import re
 def check_all_elements(elements):
     return all(elem is not None for elem in elements)
 
-
+@auth.login_required
 def post_paper():
     if not request.json:
         abort(400)
@@ -40,7 +40,7 @@ def get_paper(paper_id):
     paper = paper_key.get()
     return make_response(jsonify(paper.toJSON), 200)
 
-
+@auth.login_required
 def delete_paper(paper_id):
     paper = None
     try:
@@ -52,6 +52,9 @@ def delete_paper(paper_id):
     paper.delete()
     return make_response(jsonify({'removed': paper.urlsafe()}), 200)
 
+@papers.route('/papers/?type=<type>')
+def request_papers(type):
+    pass
 
 @papers.route('/papers/<paper_id>', methods=['DELETE', 'GET'])
 def handle_papers(paper_id):
