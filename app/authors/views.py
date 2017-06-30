@@ -50,7 +50,16 @@ def handle_author(author_id):
         return delete_author(author_id)
 
 
-@authors.route('/author', methods=['POST'])
+@authors.route('/author', methods=['POST', 'GET'])
+def handle_authors():
+    if request.method == 'GET':
+        return get_all_authors()
+    if request.method == 'POST':
+        return create_author()
+
+def get_all_authors():
+    return make_response(jsonify(Author.getAll()), 200)
+
 @auth.login_required
 def create_author():
     if not request.json or not request.json.get('id'):

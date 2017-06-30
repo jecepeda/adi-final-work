@@ -90,6 +90,15 @@ class TestAuthorBaseEndpoint(BaseTestClass):
                                  content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
+    def get_all_authors(self):
+        self.app.post('/author',
+                      headers=self.headers,
+                      data=json.dumps(self.fake_author),
+                      content_type='application/json')
+        response = self.app.get('/author')
+        result = json.loads(response.data)
+        self.assertEqual(result, [self.fake_author])
+
 
 class TestAuthorSpecificEndpoint(BaseTestClass):
 

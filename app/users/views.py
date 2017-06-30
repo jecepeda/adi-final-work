@@ -64,6 +64,29 @@ def delete_user(user_id):
     key.delete()
     return make_response(jsonify({'removed': user_id}), 200)
 
+@users.route('/user/check', methods=['POST'])
+def check_user():
+    if not request.json:
+        print "Because json"
+        abort(400)
+    user_id = request.json.get('id')
+    password = request.json.get('password')
+
+    if not check_all_elements([user_id, password]):
+        print "because not data"
+        abort(400)
+
+    try:
+        user = ndb.Key('User', user_id).get()
+    except:
+        print "not key"
+        abort(400)
+
+    if not user or not user.verify_password(password):
+        print "not password"
+        abort(400)
+
+    return make_response(jsonify({'user':'success'}), 200)
 
 @users.route('/user/<user_id>', methods=['POST', 'GET', 'PUT', 'DELETE'])
 def user_treatment(user_id):
@@ -108,6 +131,7 @@ def post_user():
     if verify_email(mail) is False:
         abort(400)
 
+    nick = '' if nick == None else nick
     new_user = User(id=mail,
                     name=name,
                     last_name=last_name,

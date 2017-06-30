@@ -1,4 +1,5 @@
 from google.appengine.ext import ndb
+from google.appengine.ext.ndb import polymodel
 from passlib.apps import custom_app_context as pwd_context
 import re
 
@@ -82,17 +83,19 @@ class Organism(ndb.Model):
         return organisms
 
 
-class Paper(ndb.Model):
+class Paper(polymodel.PolyModel):
     author = ndb.KeyProperty(kind='Author', required=True)
     title = ndb.StringProperty(required=True)
     updated = ndb.DateTimeProperty(auto_now=True)
+    paper_type = ndb.StringProperty(required=True)
 
     @property
     def toJSON(self):
         return {"id": self.key.urlsafe(),
                 "title": self.title,
                 "author": self.author.id(),
-                "updated": str(self.updated)}
+                "updated": str(self.updated),
+                "type": self.paper_type}
 
     @classmethod
     def getAll(self):
